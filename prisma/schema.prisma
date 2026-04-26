@@ -1,0 +1,29 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model BingoHall {
+  id          Int      @id @default(autoincrement())
+  name        String
+  slug        String   @unique
+  address     String
+  city        String
+  state       String
+  stateSlug   String
+  citySlug    String
+  zip         String
+  phone       String?
+  hours       String?
+  website     String?
+  description String?
+  lat         Float?
+  lng         Float?
+  status      String   @default("active")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
