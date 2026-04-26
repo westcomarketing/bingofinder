@@ -55,6 +55,8 @@ export type BingoHallMinAggregateOutputType = {
   lat: number | null
   lng: number | null
   status: string | null
+  submitterName: string | null
+  submitterEmail: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -76,6 +78,8 @@ export type BingoHallMaxAggregateOutputType = {
   lat: number | null
   lng: number | null
   status: string | null
+  submitterName: string | null
+  submitterEmail: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -97,6 +101,8 @@ export type BingoHallCountAggregateOutputType = {
   lat: number
   lng: number
   status: number
+  submitterName: number
+  submitterEmail: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -132,6 +138,8 @@ export type BingoHallMinAggregateInputType = {
   lat?: true
   lng?: true
   status?: true
+  submitterName?: true
+  submitterEmail?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -153,6 +161,8 @@ export type BingoHallMaxAggregateInputType = {
   lat?: true
   lng?: true
   status?: true
+  submitterName?: true
+  submitterEmail?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -174,6 +184,8 @@ export type BingoHallCountAggregateInputType = {
   lat?: true
   lng?: true
   status?: true
+  submitterName?: true
+  submitterEmail?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -282,6 +294,8 @@ export type BingoHallGroupByOutputType = {
   lat: number | null
   lng: number | null
   status: string
+  submitterName: string | null
+  submitterEmail: string | null
   createdAt: Date
   updatedAt: Date
   _count: BingoHallCountAggregateOutputType | null
@@ -326,6 +340,8 @@ export type BingoHallWhereInput = {
   lat?: Prisma.FloatNullableFilter<"BingoHall"> | number | null
   lng?: Prisma.FloatNullableFilter<"BingoHall"> | number | null
   status?: Prisma.StringFilter<"BingoHall"> | string
+  submitterName?: Prisma.StringNullableFilter<"BingoHall"> | string | null
+  submitterEmail?: Prisma.StringNullableFilter<"BingoHall"> | string | null
   createdAt?: Prisma.DateTimeFilter<"BingoHall"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"BingoHall"> | Date | string
 }
@@ -347,6 +363,8 @@ export type BingoHallOrderByWithRelationInput = {
   lat?: Prisma.SortOrderInput | Prisma.SortOrder
   lng?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  submitterName?: Prisma.SortOrderInput | Prisma.SortOrder
+  submitterEmail?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -371,6 +389,8 @@ export type BingoHallWhereUniqueInput = Prisma.AtLeast<{
   lat?: Prisma.FloatNullableFilter<"BingoHall"> | number | null
   lng?: Prisma.FloatNullableFilter<"BingoHall"> | number | null
   status?: Prisma.StringFilter<"BingoHall"> | string
+  submitterName?: Prisma.StringNullableFilter<"BingoHall"> | string | null
+  submitterEmail?: Prisma.StringNullableFilter<"BingoHall"> | string | null
   createdAt?: Prisma.DateTimeFilter<"BingoHall"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"BingoHall"> | Date | string
 }, "id" | "slug">
@@ -392,6 +412,8 @@ export type BingoHallOrderByWithAggregationInput = {
   lat?: Prisma.SortOrderInput | Prisma.SortOrder
   lng?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  submitterName?: Prisma.SortOrderInput | Prisma.SortOrder
+  submitterEmail?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.BingoHallCountOrderByAggregateInput
@@ -421,6 +443,8 @@ export type BingoHallScalarWhereWithAggregatesInput = {
   lat?: Prisma.FloatNullableWithAggregatesFilter<"BingoHall"> | number | null
   lng?: Prisma.FloatNullableWithAggregatesFilter<"BingoHall"> | number | null
   status?: Prisma.StringWithAggregatesFilter<"BingoHall"> | string
+  submitterName?: Prisma.StringNullableWithAggregatesFilter<"BingoHall"> | string | null
+  submitterEmail?: Prisma.StringNullableWithAggregatesFilter<"BingoHall"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"BingoHall"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"BingoHall"> | Date | string
 }
@@ -441,6 +465,8 @@ export type BingoHallCreateInput = {
   lat?: number | null
   lng?: number | null
   status?: string
+  submitterName?: string | null
+  submitterEmail?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -462,6 +488,8 @@ export type BingoHallUncheckedCreateInput = {
   lat?: number | null
   lng?: number | null
   status?: string
+  submitterName?: string | null
+  submitterEmail?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -482,6 +510,8 @@ export type BingoHallUpdateInput = {
   lat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   lng?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  submitterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submitterEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -503,6 +533,8 @@ export type BingoHallUncheckedUpdateInput = {
   lat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   lng?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  submitterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submitterEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -524,6 +556,8 @@ export type BingoHallCreateManyInput = {
   lat?: number | null
   lng?: number | null
   status?: string
+  submitterName?: string | null
+  submitterEmail?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -544,6 +578,8 @@ export type BingoHallUpdateManyMutationInput = {
   lat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   lng?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  submitterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submitterEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -565,6 +601,8 @@ export type BingoHallUncheckedUpdateManyInput = {
   lat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   lng?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  submitterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submitterEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -586,6 +624,8 @@ export type BingoHallCountOrderByAggregateInput = {
   lat?: Prisma.SortOrder
   lng?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  submitterName?: Prisma.SortOrder
+  submitterEmail?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -613,6 +653,8 @@ export type BingoHallMaxOrderByAggregateInput = {
   lat?: Prisma.SortOrder
   lng?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  submitterName?: Prisma.SortOrder
+  submitterEmail?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -634,6 +676,8 @@ export type BingoHallMinOrderByAggregateInput = {
   lat?: Prisma.SortOrder
   lng?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  submitterName?: Prisma.SortOrder
+  submitterEmail?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -691,6 +735,8 @@ export type BingoHallSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   lat?: boolean
   lng?: boolean
   status?: boolean
+  submitterName?: boolean
+  submitterEmail?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["bingoHall"]>
@@ -712,6 +758,8 @@ export type BingoHallSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   lat?: boolean
   lng?: boolean
   status?: boolean
+  submitterName?: boolean
+  submitterEmail?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["bingoHall"]>
@@ -733,6 +781,8 @@ export type BingoHallSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   lat?: boolean
   lng?: boolean
   status?: boolean
+  submitterName?: boolean
+  submitterEmail?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["bingoHall"]>
@@ -754,11 +804,13 @@ export type BingoHallSelectScalar = {
   lat?: boolean
   lng?: boolean
   status?: boolean
+  submitterName?: boolean
+  submitterEmail?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type BingoHallOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "address" | "city" | "state" | "stateSlug" | "citySlug" | "zip" | "phone" | "hours" | "website" | "description" | "lat" | "lng" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["bingoHall"]>
+export type BingoHallOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "address" | "city" | "state" | "stateSlug" | "citySlug" | "zip" | "phone" | "hours" | "website" | "description" | "lat" | "lng" | "status" | "submitterName" | "submitterEmail" | "createdAt" | "updatedAt", ExtArgs["result"]["bingoHall"]>
 
 export type $BingoHallPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "BingoHall"
@@ -780,6 +832,8 @@ export type $BingoHallPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     lat: number | null
     lng: number | null
     status: string
+    submitterName: string | null
+    submitterEmail: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["bingoHall"]>
@@ -1221,6 +1275,8 @@ export interface BingoHallFieldRefs {
   readonly lat: Prisma.FieldRef<"BingoHall", 'Float'>
   readonly lng: Prisma.FieldRef<"BingoHall", 'Float'>
   readonly status: Prisma.FieldRef<"BingoHall", 'String'>
+  readonly submitterName: Prisma.FieldRef<"BingoHall", 'String'>
+  readonly submitterEmail: Prisma.FieldRef<"BingoHall", 'String'>
   readonly createdAt: Prisma.FieldRef<"BingoHall", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"BingoHall", 'DateTime'>
 }

@@ -84,6 +84,8 @@ export const BingoHallScalarFieldEnum = {
   lat: 'lat',
   lng: 'lng',
   status: 'status',
+  submitterName: 'submitterName',
+  submitterEmail: 'submitterEmail',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
