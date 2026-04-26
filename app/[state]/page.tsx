@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { slugToStateName, slugToStateAbbr, STATE_SLUGS } from "@/lib/states";
+import { slugToStateName, slugToStateAbbr } from "@/lib/states";
 import type { Metadata } from "next";
 
 interface Props {
@@ -11,9 +11,7 @@ interface Props {
 
 const PAGE_SIZE = 40;
 
-export async function generateStaticParams() {
-  return Object.values(STATE_SLUGS).map((state) => ({ state }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { state: stateSlug } = await params;

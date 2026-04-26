@@ -11,6 +11,8 @@ interface Props {
 
 const PAGE_SIZE = 20;
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { state: stateSlug, city: citySlug } = await params;
   const stateName = slugToStateName(stateSlug);

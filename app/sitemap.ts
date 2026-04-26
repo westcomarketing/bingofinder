@@ -2,6 +2,8 @@ import { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 import { STATE_SLUGS } from "@/lib/states";
 
+export const dynamic = "force-dynamic";
+
 const BASE_URL = "https://bingofinder.com";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
