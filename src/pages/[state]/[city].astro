@@ -1,0 +1,127 @@
+---
+export const prerender = false;
+
+import Layout from "../../layouts/Layout.astro";
+import { prisma } from "../../lib/prisma";
+import { slugToStateName, slugToStateAbbr } from "../../lib/states";
+
+const { state: stateSlug, city: citySlug } = Astro.params;
+const pageParam = Astro.url.searchParams.get("page");
+
+const stateName = stateSlug ? slugToStateName(stateSlug) : null;
+const stateAbbr = stateSlug ? slugToStateAbbr(stateSlug) : null;
+
+if (!stateName || !stateAbbr || !citySlug) {
+  return new Response("Not found", { status: 404 });
+}
+
+const PAGE_SIZE = 20;
+const page = Math.max(1, parseInt(pageParam ?? "1", 10) || 1);
+const skip = (page - 1) * PAGE_SIZE;
+
+const where = { stateSlug: stateSlug!, citySlug, status: "active" };
+
+const [halls, total] = await Promise.all([
+  prisma.bingoHall.findMany({
+    where,
+    orderBy: { name: "asc" },
+    take: PAGE_SIZE,
+    skip,
+  }),
+  prisma.bingoHall.count({ where }),
+]);
+
+if (total === 0) {
+  return new Response("Not found", { status: 404 });
+}
+
+const cityName = halls[0]?.city ?? citySlug;
+const totalPages = Math.ceil(total / PAGE_SIZE);
+
+const buildPageUrl = (p: number) => `/${stateSlug}/${citySlug}?page=${p}`;
+
+const title = `Bingo Halls in ${cityName}, ${stateAbbr}`;
+const description = `Find ${cityName} bingo halls. Browse local bingo halls in ${cityName}, ${stateName} with hours, addresses, and phone numbers.`;
+---
+
+<Layout title={title} description={description} canonical={`/${stateSlug}/${citySlug}`}>
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    {/* Breadcrumb */}
+    <nav class="text-sm text-gray-500 mb-6">
+      <a href="/" class="hover:underline">Home</a>{" "}
+      &rsaquo;{" "}
+      <a href={`/${stateSlug}`} class="hover:underline">{stateName}</a>{" "}
+      &rsaquo; <span class="text-gray-900">{cityName}</span>
+    </nav>
+
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">
+      Bingo Halls in {cityName}, {stateAbbr}
+    </h1>
+    <p class="text-gray-600 mb-8">
+      {total} bingo hall{total !== 1 ? "s" : ""} in {cityName}, {stateName}.
+      {totalPages > 1 && ` Page ${page} of ${totalPages}.`}
+    </p>
+
+    <div class="space-y-3">
+      {halls.map((hall) => (
+        <a
+          href={`/bingo-halls/${hall.slug}`}
+          class="flex flex-col sm:flex-row sm:items-center gap-3 border border-gray-200 rounded-xl p-4 hover:border-purple-400 hover:shadow-sm transition-all"
+        >
+          <div class="flex-1 min-w-0">
+            <h2 class="text-base font-semibold text-purple-900 leading-tight mb-0.5">
+              {hall.name}
+            </h2>
+            <p class="text-gray-600 text-sm truncate">
+              {hall.address}, {hall.city}, {hall.state} {hall.zip}
+            </p>
+          </div>
+          <div class="flex flex-row sm:flex-col gap-2 sm:gap-1 text-xs text-gray-500 shrink-0">
+            {hall.phone && (
+              <span class="bg-gray-100 px-2 py-1 rounded-md">📞 {hall.phone}</span>
+            )}
+            {hall.hours && (
+              <span class="bg-gray-100 px-2 py-1 rounded-md">🕐 {hall.hours}</span>
+            )}
+          </div>
+        </a>
+      ))}
+    </div>
+
+    {/* Pagination */}
+    {totalPages > 1 && (
+      <nav class="flex items-center justify-center gap-2 mt-8">
+        {page > 1 && (
+          <a href={buildPageUrl(page - 1)} class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">
+            ← Previous
+          </a>
+        )}
+        <span class="text-sm text-gray-600">
+          Page {page} of {totalPages}
+        </span>
+        {page < totalPages && (
+          <a href={buildPageUrl(page + 1)} class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">
+            Next →
+          </a>
+        )}
+      </nav>
+    )}
+
+    <section class="mt-12 bg-gray-50 rounded-xl p-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-3">
+        Bingo in {cityName}, {stateName}
+      </h2>
+      <p class="text-gray-600 text-sm leading-relaxed">
+        {cityName} has {total} bingo hall{total !== 1 ? "s" : ""} available. Click any listing
+        above for full details including address, hours, and contact information. Many {cityName}{" "}
+        bingo halls also host special events and progressive jackpot games — call ahead to confirm
+        current schedules.
+      </p>
+      <div class="mt-4">
+        <a href="/submit" class="text-purple-700 hover:underline text-sm">
+          Know a hall not listed? Submit it →
+        </a>
+      </div>
+    </section>
+  </main>
+</Layout>
