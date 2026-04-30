@@ -1,8 +1,12 @@
 node_modules/
 .next/
+.astro/
+dist/
+.wrangler/
 *.db
 *.db-shm
 *.db-wal
 .env
 .env.local
 .env.production
+src/generated/

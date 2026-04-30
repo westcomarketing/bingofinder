@@ -1,0 +1,181 @@
+---
+export const prerender = false;
+
+import Layout from "../layouts/Layout.astro";
+import { prisma } from "../lib/prisma";
+
+const query = (Astro.url.searchParams.get("q") ?? "").trim();
+const pageParam = Astro.url.searchParams.get("page");
+const page = Math.max(1, parseInt(pageParam ?? "1", 10) || 1);
+
+const PAGE_SIZE = 20;
+const skip = (page - 1) * PAGE_SIZE;
+
+type HallRow = {
+  id: number;
+  slug: string;
+  name: string;
+  address: string;
+  city: string;
+  state: string;
+  zip: string;
+  phone: string | null;
+  hours: string | null;
+  stateSlug: string;
+  citySlug: string;
+};
+
+let halls: HallRow[] = [];
+let total = 0;
+
+if (query) {
+  const where = {
+    status: "active",
+    OR: [
+      { name: { contains: query } },
+      { city: { contains: query } },
+      { state: { contains: query } },
+      { zip: { contains: query } },
+      { address: { contains: query } },
+    ],
+  };
+
+  [halls, total] = await Promise.all([
+    prisma.bingoHall.findMany({
+      where,
+      select: {
+        id: true,
+        slug: true,
+        name: true,
+        address: true,
+        city: true,
+        state: true,
+        zip: true,
+        phone: true,
+        hours: true,
+        stateSlug: true,
+        citySlug: true,
+      },
+      orderBy: [{ state: "asc" }, { city: "asc" }, { name: "asc" }],
+      take: PAGE_SIZE,
+      skip,
+    }),
+    prisma.bingoHall.count({ where }),
+  ]);
+}
+
+const totalPages = Math.ceil(total / PAGE_SIZE);
+
+const buildPageUrl = (p: number) => {
+  const params = new URLSearchParams({ q: query, page: String(p) });
+  return `/search?${params}`;
+};
+
+const title = query ? `Bingo Halls matching "${query}"` : "Search Bingo Halls";
+const description = query
+  ? `Search results for "${query}". Find bingo halls by city, state, name, or zip code.`
+  : "Search for bingo halls by city, state, name, or zip code.";
+---
+
+<Layout title={title} description={description}>
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-6">Search Bingo Halls</h1>
+
+    {/* Search form */}
+    <form action="/search" method="GET" class="mb-8">
+      <div class="flex gap-2">
+        <input
+          type="text"
+          name="q"
+          value={query}
+          placeholder="City, state, zip, or hall name..."
+          class="flex-1 border border-gray-300 rounded-lg px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          autofocus
+        />
+        <button
+          type="submit"
+          class="bg-purple-800 hover:bg-purple-700 text-white font-semibold px-6 py-3 rounded-lg"
+        >
+          Search
+        </button>
+      </div>
+    </form>
+
+    {/* Results */}
+    {!query && (
+      <p class="text-gray-500 text-center py-12">
+        Enter a city, state abbreviation, zip code, or hall name to find bingo halls near you.
+      </p>
+    )}
+
+    {query && total === 0 && (
+      <div class="text-center py-12">
+        <p class="text-gray-700 text-lg mb-2">
+          No bingo halls found for &ldquo;{query}&rdquo;.
+        </p>
+        <p class="text-gray-500 text-sm">
+          Try searching by state abbreviation (e.g. &quot;CA&quot;), city name, or zip code.
+        </p>
+        <div class="mt-6">
+          <a href="/" class="text-purple-700 hover:underline text-sm">
+            Browse by state →
+          </a>
+        </div>
+      </div>
+    )}
+
+    {query && total > 0 && (
+      <>
+        <p class="text-gray-600 mb-4 text-sm">
+          {total.toLocaleString()} result{total !== 1 ? "s" : ""} for &ldquo;{query}&rdquo;
+          {totalPages > 1 && ` — page ${page} of ${totalPages}`}
+        </p>
+
+        <div class="space-y-3">
+          {halls.map((hall) => (
+            <a
+              href={`/bingo-halls/${hall.slug}`}
+              class="block border border-gray-200 rounded-xl p-4 hover:border-purple-400 hover:shadow-sm transition-all"
+            >
+              <h2 class="font-semibold text-purple-900 mb-0.5">{hall.name}</h2>
+              <p class="text-gray-600 text-sm">
+                {hall.address}, {hall.city}, {hall.state} {hall.zip}
+              </p>
+              <div class="flex flex-wrap gap-3 mt-1.5 text-xs text-gray-500">
+                {hall.phone && <span>📞 {hall.phone}</span>}
+                {hall.hours && <span>🕐 {hall.hours}</span>}
+                <span class="text-purple-600">
+                  More in {hall.city}
+                </span>
+              </div>
+            </a>
+          ))}
+        </div>
+
+        {totalPages > 1 && (
+          <nav class="flex items-center justify-center gap-2 mt-8">
+            {page > 1 && (
+              <a
+                href={buildPageUrl(page - 1)}
+                class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50"
+              >
+                ← Previous
+              </a>
+            )}
+            <span class="text-sm text-gray-600">
+              Page {page} of {totalPages}
+            </span>
+            {page < totalPages && (
+              <a
+                href={buildPageUrl(page + 1)}
+                class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50"
+              >
+                Next →
+              </a>
+            )}
+          </nav>
+        )}
+      </>
+    )}
+  </main>
+</Layout>

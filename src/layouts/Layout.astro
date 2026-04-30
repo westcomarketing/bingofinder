@@ -1,0 +1,75 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+  canonical?: string;
+}
+
+const {
+  title = "BingoFinder — Find Bingo Halls Near You",
+  description = "Find bingo halls near you across all 50 US states. 500+ listings with hours, phone numbers, and directions.",
+  canonical,
+} = Astro.props;
+
+const fullTitle =
+  title === "BingoFinder — Find Bingo Halls Near You"
+    ? title
+    : `${title} | BingoFinder`;
+
+const canonicalUrl = canonical
+  ? new URL(canonical, "https://bingofinder.com").toString()
+  : undefined;
+const year = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en" class="h-full antialiased">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+    <link rel="icon" href="/favicon.ico" />
+    <title>{fullTitle}</title>
+    <slot name="head" />
+  </head>
+  <body class="min-h-full flex flex-col font-sans">
+    <header class="bg-purple-900 text-white">
+      <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+        <a href="/" class="text-xl font-bold tracking-tight shrink-0">
+          🎱 BingoFinder
+        </a>
+        <nav class="flex items-center gap-4 text-sm text-purple-200 flex-wrap">
+          <a href="/search" class="hover:text-white">Search</a>
+          <a href="/submit" class="hover:text-white hidden sm:inline">Submit a Hall</a>
+          <a href="/" class="hover:text-white hidden sm:inline">Browse States</a>
+        </nav>
+      </div>
+    </header>
+    <div class="flex-1">
+      <slot />
+    </div>
+    <footer class="bg-gray-900 text-gray-400 text-sm py-8 px-4 mt-16">
+      <div class="max-w-6xl mx-auto flex flex-col sm:flex-row gap-6 sm:gap-12">
+        <div>
+          <p class="mb-1 font-semibold text-white">BingoFinder</p>
+          <p>The most trusted directory of bingo halls in the United States.</p>
+          <p class="mt-3">&copy; {year} BingoFinder. All rights reserved.</p>
+        </div>
+        <div class="flex gap-8 text-gray-300">
+          <div class="space-y-1.5">
+            <p class="font-semibold text-white text-xs uppercase tracking-wide">Directory</p>
+            <a href="/" class="block hover:text-white">Browse by State</a>
+            <a href="/search" class="block hover:text-white">Search Halls</a>
+          </div>
+          <div class="space-y-1.5">
+            <p class="font-semibold text-white text-xs uppercase tracking-wide">Contribute</p>
+            <a href="/submit" class="block hover:text-white">Submit a Hall</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

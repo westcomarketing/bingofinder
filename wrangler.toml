@@ -1,7 +1,7 @@
 name = "bingofinder"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
-pages_build_output_dir = ".vercel/output/static"
+pages_build_output_dir = "dist"
 
 # Cloudflare D1 database (production)
 # Uncomment and configure when ready to go live:

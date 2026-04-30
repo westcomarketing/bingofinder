@@ -3,7 +3,7 @@
  * Copies all active bingo halls from local dev.db → Turso remote DB.
  * Run via: TURSO_DATABASE_URL=... TURSO_AUTH_TOKEN=... npx tsx scripts/seed-turso.ts
  */
-import { PrismaClient as LocalClient } from "../app/generated/prisma/client";
+import { PrismaClient as LocalClient } from "../src/generated/prisma/client";
 import { PrismaLibSql as LocalAdapter } from "@prisma/adapter-libsql";
 import path from "path";
 

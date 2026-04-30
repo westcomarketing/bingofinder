@@ -1,0 +1,185 @@
+---
+export const prerender = false;
+
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Admin — Pending Listings" description="BingoFinder admin queue">
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <section id="login-pane" class="max-w-sm mx-auto py-16">
+      <h1 class="text-2xl font-bold text-gray-900 mb-6">Admin Login</h1>
+      <form id="login-form" class="space-y-4">
+        <input
+          id="password"
+          type="password"
+          placeholder="Admin password"
+          class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          required
+        />
+        <button
+          type="submit"
+          class="w-full bg-purple-800 hover:bg-purple-700 text-white font-semibold py-3 rounded-lg"
+        >
+          Log in
+        </button>
+        <p id="login-error" hidden class="text-red-600 text-sm">Wrong password.</p>
+      </form>
+    </section>
+
+    <section id="queue-pane" hidden>
+      <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">Admin — Pending Listings</h1>
+        <button
+          id="refresh-button"
+          type="button"
+          class="text-sm text-purple-700 hover:underline"
+        >
+          Refresh
+        </button>
+      </div>
+
+      <p id="loading" hidden class="text-gray-500">Loading…</p>
+
+      <div id="empty-state" hidden class="text-center py-16 text-gray-500">
+        <p class="text-lg">No pending listings.</p>
+        <p class="text-sm mt-1">All submissions have been reviewed.</p>
+      </div>
+
+      <div id="hall-list" class="space-y-4"></div>
+    </section>
+  </main>
+
+  <script>
+    interface PendingHall {
+      id: number;
+      name: string;
+      address: string;
+      city: string;
+      state: string;
+      zip: string;
+      phone: string | null;
+      hours: string | null;
+      website: string | null;
+      submitterName: string | null;
+      submitterEmail: string | null;
+      createdAt: string;
+    }
+
+    const loginPane = document.getElementById("login-pane") as HTMLElement;
+    const queuePane = document.getElementById("queue-pane") as HTMLElement;
+    const loginForm = document.getElementById("login-form") as HTMLFormElement;
+    const passwordInput = document.getElementById("password") as HTMLInputElement;
+    const loginError = document.getElementById("login-error") as HTMLElement;
+    const loading = document.getElementById("loading") as HTMLElement;
+    const emptyState = document.getElementById("empty-state") as HTMLElement;
+    const hallList = document.getElementById("hall-list") as HTMLElement;
+    const refreshButton = document.getElementById("refresh-button") as HTMLButtonElement;
+
+    let password = "";
+
+    function escapeHtml(value: string): string {
+      return value
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function renderHalls(halls: PendingHall[]) {
+      hallList.innerHTML = "";
+      emptyState.hidden = halls.length !== 0;
+      for (const hall of halls) {
+        const card = document.createElement("div");
+        card.className = "border border-gray-200 rounded-xl p-5";
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-4 flex-wrap">
+            <div class="flex-1 min-w-0">
+              <h2 class="font-semibold text-gray-900 mb-0.5">${escapeHtml(hall.name)}</h2>
+              <p class="text-gray-600 text-sm">
+                ${escapeHtml(hall.address)}, ${escapeHtml(hall.city)}, ${escapeHtml(hall.state)} ${escapeHtml(hall.zip)}
+              </p>
+              <div class="flex flex-wrap gap-3 mt-1.5 text-xs text-gray-500">
+                ${hall.phone ? `<span>📞 ${escapeHtml(hall.phone)}</span>` : ""}
+                ${hall.hours ? `<span>🕐 ${escapeHtml(hall.hours)}</span>` : ""}
+                ${hall.website ? `<a href="${escapeHtml(hall.website)}" target="_blank" rel="noopener noreferrer" class="text-purple-600 hover:underline truncate max-w-[200px]">🌐 ${escapeHtml(hall.website)}</a>` : ""}
+              </div>
+              ${hall.submitterName || hall.submitterEmail ? `<p class="text-xs text-gray-400 mt-2">Submitted by: ${escapeHtml(hall.submitterName ?? "—")} ${hall.submitterEmail ? `&lt;${escapeHtml(hall.submitterEmail)}&gt;` : ""}</p>` : ""}
+              <p class="text-xs text-gray-400 mt-0.5">Received: ${new Date(hall.createdAt).toLocaleDateString()}</p>
+            </div>
+            <div class="flex gap-2 shrink-0">
+              <button data-action="approve" data-id="${hall.id}" class="bg-green-600 hover:bg-green-500 disabled:bg-gray-300 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">Approve</button>
+              <button data-action="reject" data-id="${hall.id}" class="bg-red-600 hover:bg-red-500 disabled:bg-gray-300 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">Reject</button>
+            </div>
+          </div>
+        `;
+        hallList.appendChild(card);
+      }
+    }
+
+    async function fetchPending() {
+      loading.hidden = false;
+      try {
+        const res = await fetch("/api/admin/pending", {
+          headers: { "x-admin-password": password },
+        });
+        if (!res.ok) {
+          throw new Error("unauthorized");
+        }
+        const data = await res.json();
+        renderHalls(data.halls ?? []);
+      } finally {
+        loading.hidden = true;
+      }
+    }
+
+    async function doAction(id: number, action: "approve" | "reject", button: HTMLButtonElement) {
+      const card = button.closest("div.border");
+      const buttons = card?.querySelectorAll("button");
+      buttons?.forEach((b) => ((b as HTMLButtonElement).disabled = true));
+      button.textContent = action === "approve" ? "…" : "…";
+      await fetch("/api/admin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-password": password,
+        },
+        body: JSON.stringify({ id, action }),
+      });
+      card?.remove();
+      if (hallList.childElementCount === 0) {
+        emptyState.hidden = false;
+      }
+    }
+
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      loginError.hidden = true;
+      password = passwordInput.value;
+      const res = await fetch("/api/admin/pending", {
+        headers: { "x-admin-password": password },
+      });
+      if (res.ok) {
+        loginPane.hidden = true;
+        queuePane.hidden = false;
+        const data = await res.json();
+        renderHalls(data.halls ?? []);
+      } else {
+        loginError.hidden = false;
+      }
+    });
+
+    refreshButton.addEventListener("click", () => {
+      void fetchPending();
+    });
+
+    hallList.addEventListener("click", (e) => {
+      const target = e.target as HTMLElement;
+      if (!(target instanceof HTMLButtonElement)) return;
+      const action = target.dataset.action as "approve" | "reject" | undefined;
+      const idStr = target.dataset.id;
+      if (!action || !idStr) return;
+      void doAction(Number(idStr), action, target);
+    });
+  </script>
+</Layout>
